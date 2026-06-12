@@ -41,15 +41,41 @@ def show_cookie():
 @login_required
 def edit_profile():
     form = EditProfileForm(current_user.username, current_user.email)
+    
     if form.validate_on_submit():
         current_user.username = form.username.data
         current_user.email = form.email.data
         current_user.bio = form.bio.data
+        
+        # Handle avatar upload to GCS
+        if 'avatar' in request.files:
+            file = request.files['avatar']
+            if file.filename != '':
+                try:
+                    import os
+                    bucket_name = os.environ.get('GCS_BUCKET_NAME')
+                    if not bucket_name:
+                        flash('GCS Bucket not configured', 'danger')
+                    else:
+                        from google.cloud import storage
+                        storage_client = storage.Client()
+                        bucket = storage_client.bucket(bucket_name)
+                        
+                        # 使用 username 作為檔案名
+                        filename = f"avatars/{current_user.username}_{file.filename}"
+                        blob = bucket.blob(filename)
+                        blob.upload_from_string(file.read(), content_type=file.content_type)
+                        
+                        current_user.avatar = f"https://storage.googleapis.com/{bucket_name}/{filename}"
+                        flash('Profile picture uploaded successfully!', 'success')
+                except Exception as e:
+                    flash(f'Avatar upload failed: {str(e)}', 'danger')
+        
         db.session.commit()
         flash('Your profile has been updated.', 'success')
         return redirect(url_for('main.user_profile', username=current_user.username))
     
-
+    # Populate form
     form.username.data = current_user.username
     form.email.data = current_user.email
     form.bio.data = current_user.bio

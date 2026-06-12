@@ -11,20 +11,18 @@
                     <h3>{{ 'Edit Resource' if resource else 'Upload New Resource' }}</h3>
                 </div>
                 <div class="card-body p-4">
-                    <form method="post">
+                    <form method="post" enctype="multipart/form-data">
                         {{ form.hidden_tag() }}
                         
                         <div class="mb-3">
                             {{ form.title.label(class="form-label") }}
                             {{ form.title(class="form-control" + (' is-invalid' if form.title.errors else '')) }}
-                            {% for error in form.title.errors %}
-                                <div class="invalid-feedback">{{ error }}</div>
-                            {% endfor %}
+                            {% for error in form.title.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
                         </div>
                         
                         <div class="mb-3">
                             {{ form.description.label(class="form-label") }}
-                            {{ form.description(class="form-control", rows=5) }}
+                            {{ form.description(class="form-control", rows=4) }}
                         </div>
                         
                         <div class="row">
@@ -38,21 +36,17 @@
                             </div>
                         </div>
                         
+                        <!-- GCS File Upload -->
                         <div class="mb-3">
-                            {{ form.file_path.label(class="form-label") }}
-                            {{ form.file_path(class="form-control", placeholder="File path or URL") }}
-                            <small class="text-muted">Enter file path on server or external URL</small>
+                            {{ form.file.label(class="form-label") }}
+                            {{ form.file(class="form-control") }}
+                            <small class="text-muted">上傳檔案到 Google Cloud Storage (PDF, ZIP, Image 等)</small>
+                            {% for error in form.file.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
                         </div>
                         
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                {{ form.external_link.label(class="form-label") }}
-                                {{ form.external_link(class="form-control", placeholder="https://...") }}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                {{ form.file_size.label(class="form-label") }}
-                                {{ form.file_size(class="form-control", placeholder="e.g., 2.5 MB") }}
-                            </div>
+                        <div class="mb-3">
+                            {{ form.external_link.label(class="form-label") }}
+                            {{ form.external_link(class="form-control", placeholder="或輸入外部連結") }}
                         </div>
                         
                         <div class="mb-3 form-check">

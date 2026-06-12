@@ -14,49 +14,29 @@ spec:
     spec:
       containers:
       - name: flask
-        image: asia-east1-docker.pkg.dev/groupa02eaproject/flask-repo/flask-app:v11
+        image: asia-east1-docker.pkg.dev/itp4122project/itp4122-repo/flask-app:latest
         ports:
         - containerPort: 8080
+        command: ["gunicorn"]
+        args: ["--bind", "0.0.0.0:8080", "microblog:app"]
         env:
-        - name: FLASK_ENV
-          value: "production"
-        - name: INSTANCE_CONNECTION_NAME
-          value: "groupa02eaproject:asia-east1:eadb"
         - name: DB_USER
           value: "esther"
-        - name: DB_NAME
-          value: "eadb"
         - name: DB_PASS
           valueFrom:
             secretKeyRef:
               name: db-secret
               key: DB_PASS
+        - name: DB_HOST
+          value: "35.201.179.178"
+        - name: DB_NAME
+          value: "eadb"
+        - name: GCS_BUCKET_NAME
+          value: "itp4122-upload-1780634365"
         - name: SECRET_KEY
           valueFrom:
             secretKeyRef:
               name: db-secret
               key: SECRET_KEY
         - name: PUBLIC_BASE_URL
-          value: "http://34.81.14.237"
-        - name: MAIL_USERNAME
-          value: "itp4115ead@gmail.com"
-        - name: MAIL_DEFAULT_SENDER
-          value: "itp4115ead@gmail.com"
-        - name: MAIL_PASSWORD
-          value: "osdkonjwlzwaezdx"
-        resources:
-          requests:
-            cpu: "300m"
-            memory: "512Mi"
-
-      - name: cloud-sql-proxy
-        image: gcr.io/cloudsql-docker/gce-proxy:1.36.0
-        command: ["/cloud_sql_proxy"]
-        args:
-        - "-instances=groupa02eaproject:asia-east1:eadb=tcp:3306"
-        securityContext:
-          runAsNonRoot: true
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "200Mi"
+          value: "http://35.234.15.92"

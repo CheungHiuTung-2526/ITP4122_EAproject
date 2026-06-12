@@ -8,6 +8,7 @@ from app.models.community import DiscussionPost, PostComment, PostLike
 from app.models.resource import ResourceCategory, Resource, Download
 
 
+
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -63,6 +64,13 @@ class EditProfileForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=3, max=64)])
     email = StringField('Email', validators=[DataRequired(), Email(), Length(max=120)])
     bio = TextAreaField('About me', validators=[Length(max=500)])
+    
+    # ==================== Avatar Upload (只限 JPG / PNG) ====================
+    avatar = FileField('Profile Picture', validators=[
+        FileAllowed(['jpg', 'jpeg', 'png'], 'Only JPG and PNG files are allowed!')
+    ])
+    # =====================================================================
+    
     submit = SubmitField('Save Changes')
 
     def __init__(self, original_username, original_email, *args, **kwargs):
@@ -126,6 +134,14 @@ class ResourceForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(), Length(max=200)])
     description = TextAreaField('Description')
     type = SelectField('Type', choices=[('ebook','E-book'),('video','Video'),('sample','Sample Code'),('tool','Tool')])
+    
+    # ==================== GCS File Upload ====================
+    file = FileField('Upload File', validators=[
+        FileAllowed(['pdf', 'zip', 'docx', 'pptx', 'png', 'jpg', 'jpeg', 'mp4'], 
+                   'Only PDF, ZIP, Images, Videos etc. allowed!')
+    ])
+    # =========================================================
+    
     file_path = StringField('File Path or URL', validators=[Length(max=500)])
     external_link = StringField('External Link', validators=[Length(max=500)])
     file_size = StringField('File Size', validators=[Length(max=50)])

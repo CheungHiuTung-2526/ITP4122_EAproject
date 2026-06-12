@@ -1,0 +1,9 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'asia-east1-docker.pkg.dev/itp4122project/itp4122-repo/flask-app:latest', '.']
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'asia-east1-docker.pkg.dev/itp4122project/itp4122-repo/flask-app:latest']
+
+images:
+- 'asia-east1-docker.pkg.dev/itp4122project/itp4122-repo/flask-app:latest'
