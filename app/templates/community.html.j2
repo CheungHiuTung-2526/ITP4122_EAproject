@@ -1,12 +1,12 @@
 {% extends "base.html.j2" %}
 
-{% block title %}Community - ASP.NET Core Forum{% endblock %}
+{% block title %}Community - DILWL Staff Portal Forum{% endblock %}
 
 {% block content %}
 <div class="container my-5">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Community Discussions</h2>
+        <h2 class="mb-0">Internal Announcements & Discussions</h2>
         {% if current_user.is_authenticated %}
         <a href="{{ url_for('community.create_post') }}" class="btn btn-primary">
             <i class="bi bi-plus-lg me-2"></i> New Discussion

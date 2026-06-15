@@ -37,7 +37,7 @@ def send_password_reset_email(user):
     reset_url = f"{current_app.config['PUBLIC_BASE_URL']}/auth/reset_password/{token}"
     
     send_email(
-        subject='[ASP.NET Core Community] Reset Your Password',
+        subject='[DILWL Staff Internal System] Reset Your Password',
         recipients=[user.email],
         text_body=render_template('email/reset_password.txt.j2', 
                                   user=user, reset_url=reset_url),
