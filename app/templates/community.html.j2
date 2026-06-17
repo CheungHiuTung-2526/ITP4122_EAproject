@@ -1,29 +1,39 @@
 {% extends "base.html.j2" %}
 
-{% block title %}Community - DILWL Staff Portal Forum{% endblock %}
+{% block title %}Community Discussions - IVE LWL Academic Hub{% endblock %}
 
 {% block content %}
 <div class="container my-5">
 
+    <!-- Page Header -->
+    <div class="mb-4">
+        <h2 class="mb-2">Community Discussions</h2>
+        <p class="text-muted mb-0">
+            Peer-to-peer academic discussions for Cloud & Data Centre students. 
+            This platform complements Moodle by enabling informal knowledge sharing and collaboration.
+        </p>
+    </div>
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Internal Announcements & Discussions</h2>
         {% if current_user.is_authenticated %}
-        <a href="{{ url_for('community.create_post') }}" class="btn btn-primary">
+        <a href="{{ url_for('community.create_post') }}" class="btn btn-purple">
             <i class="bi bi-plus-lg me-2"></i> New Discussion
         </a>
+        {% else %}
+        <div></div>
         {% endif %}
     </div>
 
-<!-- Search + Category Filter + Clear (修正版 - 更穩定) -->
+    <!-- Search + Category Filter -->
     <div class="row mb-4 g-3 align-items-end">
         <!-- Search Box -->
         <div class="col-lg-5 col-md-6">
             <form method="GET" class="d-flex">
                 <input type="text" name="q" 
                        class="form-control" 
-                       placeholder="Search by title or content..." 
+                       placeholder="Search discussions..." 
                        value="{{ query or '' }}">
-                <button type="submit" class="btn btn-primary ms-2">
+                <button type="submit" class="btn btn-purple ms-2">
                     <i class="bi bi-search"></i>
                 </button>
             </form>
@@ -35,8 +45,9 @@
                 <select name="category" class="form-select" onchange="this.form.submit()">
                     <option value="">All Categories</option>
                     <option value="general" {{ 'selected' if category == 'general' else '' }}>General</option>
-                    <option value="help" {{ 'selected' if category == 'help' else '' }}>Help</option>
+                    <option value="help" {{ 'selected' if category == 'help' else '' }}>Help & Questions</option>
                     <option value="showcase" {{ 'selected' if category == 'showcase' else '' }}>Showcase</option>
+                    <option value="cloud" {{ 'selected' if category == 'cloud' else '' }}>Cloud & DevOps</option>
                 </select>
             </form>
         </div>
@@ -46,7 +57,7 @@
         <div class="col-lg-2 col-md-3">
             <a href="{{ url_for('community.index', sort=sort) }}" 
                class="btn btn-outline-secondary w-100">
-                <i class="bi bi-x-circle"></i> Clear
+                <i class="bi bi-x-circle"></i> Clear Filters
             </a>
         </div>
         {% endif %}
@@ -59,169 +70,72 @@
                href="{{ url_for('community.index', sort='latest', q=query, category=category) }}">Latest</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if sort == 'replies' %}active{% endif %}" 
-               href="{{ url_for('community.index', sort='replies', q=query, category=category) }}">Most Comments</a>
+            <a class="nav-link {% if sort == 'popular' %}active{% endif %}" 
+               href="{{ url_for('community.index', sort='popular', q=query, category=category) }}">Most Discussed</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if sort == 'views' %}active{% endif %}" 
-               href="{{ url_for('community.index', sort='views', q=query, category=category) }}">Most Views</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if sort == 'likes' %}active{% endif %}" 
-               href="{{ url_for('community.index', sort='likes', q=query, category=category) }}">Most Likes</a>
+            <a class="nav-link {% if sort == 'pinned' %}active{% endif %}" 
+               href="{{ url_for('community.index', sort='pinned', q=query, category=category) }}">Pinned</a>
         </li>
     </ul>
 
-    <!-- Pinned Discussions -->
-    {% if pinned_posts %}
-    <div class="mb-5">
-        <h5 class="text-danger mb-3">
-            <i class="bi bi-pin-angle-fill me-2"></i> Pinned Discussions
-        </h5>
-        <div class="table-responsive">
-            <table class="table table-hover border-0 mb-0">
-                <thead class="table-warning">
-                    <tr>
-                        <th>Topic</th>
-                        <th class="text-center">Likes</th>
-                        <th class="text-center">Comments</th>
-                        <th class="text-center">Views</th>
-                        <th>Latest Activity</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for post in pinned_posts %}
-                    <tr class="table-warning">
-                        <td class="clickable-row" data-href="{{ url_for('community.view_post', id=post.id) }}">
-                            <i class="bi bi-pin-fill text-warning me-2"></i>
-                            <a href="{{ url_for('community.view_post', id=post.id) }}" class="fw-bold text-decoration-none">
+    <!-- Discussion Posts List -->
+    {% if posts %}
+        {% for post in posts %}
+        <div class="card mb-3 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title mb-1">
+                            <a href="{{ url_for('community.view_post', id=post.id) }}" class="text-decoration-none">
                                 {{ post.title }}
                             </a>
-                            <div class="mt-1">
-                                {{ render_category_badge(post.category) }}
-                                <span class="badge bg-danger ms-2">Pinned</span>
-                            </div>
-                            <div class="small text-muted">
-                                by {{ post.author.username if post.author else 'Unknown' }}
-                            </div>
-                        </td>
-                        <td class="text-center">{{ post.likes.count() if post.likes else 0 }}</td>
-                        <td class="text-center">{{ post.reply_count or 0 }}</td>
-                        <td class="text-center">{{ post.view_count or 0 }}</td>
-                        <td class="small">{{ post.updated_at.strftime('%Y-%m-%d %H:%M') if post.updated_at else '-' }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- Normal Posts -->
-    <div class="table-responsive">
-        <table class="table table-hover border-0 mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th>Topic</th>
-                    <th class="text-center">Likes</th>
-                    <th class="text-center">Comments</th>
-                    <th class="text-center">Views</th>
-                    <th>Latest Activity</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for post in posts %}
-                <tr class="clickable-row" data-href="{{ url_for('community.view_post', id=post.id) }}">
-                    <td>
-                        {% if post.is_pinned %}
-                            <i class="bi bi-pin-fill text-warning me-2"></i>
-                        {% endif %}
-                        <a href="{{ url_for('community.view_post', id=post.id) }}" class="fw-bold text-decoration-none">
-                            {{ post.title }}
-                        </a>
-                        <div class="mt-1">
-                            {{ render_category_badge(post.category) }}
-                            {% if post.is_edited %}
-                                <span class="badge bg-info ms-2">Edited</span>
+                            {% if post.is_pinned %}
+                                <span class="badge bg-warning text-dark ms-2">Pinned</span>
                             {% endif %}
-                        </div>
-                        <div class="small text-muted">
-                            by {{ post.author.username if post.author else 'Unknown' }}
-                        </div>
-                    </td>
-                    <td class="text-center">{{ post.likes.count() if post.likes else 0 }}</td>
-                    <td class="text-center">{{ post.reply_count or 0 }}</td>
-                    <td class="text-center">{{ post.view_count or 0 }}</td>
-                    <td class="small">
-                        {{ post.updated_at.strftime('%Y-%m-%d %H:%M') if post.updated_at else post.created_at.strftime('%Y-%m-%d %H:%M') }}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                        </h5>
+                        <p class="text-muted small mb-2">
+                            by <strong>{{ post.author.username }}</strong> 
+                            • {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}
+                            {% if post.category %}
+                                • <span class="badge bg-secondary">{{ post.category }}</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-light text-dark">{{ post.comments.count() }} comments</span>
+                    </div>
+                </div>
+                <p class="card-text text-muted">{{ post.content[:200] }}{% if post.content|length > 200 %}...{% endif %}</p>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info">
+            No discussions found. Be the first to start a conversation!
+        </div>
+    {% endif %}
 
     <!-- Pagination -->
     {% if pagination and pagination.pages > 1 %}
-    <nav class="mt-5">
+    <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">
             {% for page_num in pagination.iter_pages() %}
                 {% if page_num %}
-                    <li class="page-item {{ 'active' if page_num == pagination.page else '' }}">
-                        <a class="page-link" href="{{ url_for('community.index', page=page_num, sort=request.args.get('sort', 'latest')) }}">
-                            {{ page_num }}
-                        </a>
+                    {% if page_num != pagination.page %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('community.index', page=page_num, sort=sort, q=query, category=category) }}">{{ page_num }}</a>
                     </li>
+                    {% else %}
+                    <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                    {% endif %}
                 {% else %}
-                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
                 {% endif %}
             {% endfor %}
         </ul>
     </nav>
     {% endif %}
-    
-    <style>
-    .table {
-        border-collapse: separate;
-        border-spacing: 0 4px;   /* 控制行與行之間的間距 */
-    }
-    
-    .table td, .table th {
-        border: none !important;
-        background-color: white;
-    }
-    
-    .table tbody tr {
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        border-radius: 8px;
-    }
-    
-    .table thead th {
-        border-bottom: 2px solid #dee2e6;
-        font-weight: 600;
-    }
-</style>
+
 </div>
-
-<script>
-document.querySelectorAll('.clickable-row').forEach(row => {
-    row.style.cursor = 'pointer';
-    row.addEventListener('click', () => {
-        window.location.href = row.dataset.href;
-    });
-});
-</script>
-
 {% endblock %}
-
-{% macro render_category_badge(category) %}
-    {% if category == 'general' or category is none %}
-        <span class="badge bg-primary">General</span>
-    {% elif category == 'help' %}
-        <span class="badge bg-success">Help</span>
-    {% elif category == 'showcase' %}
-        <span class="badge bg-warning text-dark">Showcase</span>
-    {% else %}
-        <span class="badge bg-secondary">{{ category | title }}</span>
-    {% endif %}
-{% endmacro %}  

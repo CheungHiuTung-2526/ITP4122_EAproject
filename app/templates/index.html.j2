@@ -1,47 +1,65 @@
 {% extends "base.html.j2" %}
 
-{% block title %}DILWL Staff Portal - Free. Cross-platform. Open-source{% endblock %}
+{% block title %}IVE LWL Academic Hub{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
 <div class="hero">
     <div class="container text-center">
-        <h1 class="display-3 fw-bold">DILWL Staff Internal System</h1>
+        <h1 class="display-3 fw-bold">IVE LWL Academic Hub</h1>
         <p class="lead mb-4">
-            Secure. Efficient. Designed for DILWL Institute staff.<br>
-            Manage documents, training, payroll resources, and internal communications in one place.
+            A cloud-native discussion platform for Cloud & Data Centre students.<br>
+            Share tutorials, exchange resources, and engage in peer-to-peer discussions<br>
+            to complement Moodle in hybrid learning.
         </p>
+        <div class="mt-4">
+            {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg px-4 me-2">Get Started</a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg px-4">Login</a>
+            {% else %}
+            <a href="{{ url_for('community.index') }}" class="btn btn-light btn-lg px-4">Join the Discussion</a>
+            {% endif %}
         </div>
     </div>
 </div>
 
 <div class="container">
+
     <!-- Features Cards -->
     <div class="row g-4 mb-5">
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm p-4">
-                <div class="card-body text-center">
-                    <i class="fas fa-rocket fa-3x mb-3"></i>
-                    <h3 class="h5">Fast & Scalable</h3>
-                    <p class="text-muted">DILWL Staff Portal is optimized for performance and scales easily to handle millions of users.</p>
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm p-4 text-center">
+                <div class="card-body">
+                    <i class="bi bi-chat-dots-fill fa-3x mb-3" style="color: #5c2d91;"></i>
+                    <h3 class="h5">Community Discussions</h3>
+                    <p class="text-muted">Post questions, share experiences, and engage in peer-to-peer discussions with fellow students and teaching staff.</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm p-4">
-                <div class="card-body text-center">
-                    <i class="fas fa-shield-alt fa-3x mb-3"></i>
-                    <h3 class="h5">Secure by Default</h3>
-                    <p class="text-muted">Built-in protection against XSS, CSRF, and SQL injection. Supports modern auth protocols.</p>
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm p-4 text-center">
+                <div class="card-body">
+                    <i class="bi bi-book-fill fa-3x mb-3" style="color: #5c2d91;"></i>
+                    <h3 class="h5">Tutorials</h3>
+                    <p class="text-muted">Browse and contribute practical tutorials on cloud technologies, DevOps, networking, and more.</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm p-4">
-                <div class="card-body text-center">
-                    <i class="fas fa-code-branch fa-3x mb-3"></i>
-                    <h3 class="h5">Open Source</h3>
-                    <p class="text-muted">Thousands of contributors and a vibrant community on GitHub.</p>
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm p-4 text-center">
+                <div class="card-body">
+                    <i class="bi bi-folder-fill fa-3x mb-3" style="color: #5c2d91;"></i>
+                    <h3 class="h5">Learning Resources</h3>
+                    <p class="text-muted">Upload and share study materials securely using Google Cloud Storage. Accessible to all authenticated users.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm p-4 text-center">
+                <div class="card-body">
+                    <i class="bi bi-people-fill fa-3x mb-3" style="color: #5c2d91;"></i>
+                    <h3 class="h5">Two-tier Access</h3>
+                    <p class="text-muted">Students and Teaching Staff have role-based permissions. Staff can manage users, roles, and content categories.</p>
                 </div>
             </div>
         </div>
@@ -89,11 +107,12 @@
     <div class="row mt-5">
         <div class="col-12 text-center">
             <div class="bg-light p-5 rounded-3">
-                <h3>Ready to build something amazing?</h3>
-                <p class="lead">Join the community and start learning DILWL Staff Portal today.</p>
-                <a href="{{ url_for('community.index') }}" class="btn btn-purple btn-lg px-4">Join the Community</a>
+                <h3>Ready to join the community?</h3>
+                <p class="lead mb-4">Connect with Cloud & Data Centre students and teaching staff at IVE(LWL).</p>
+                <a href="{{ url_for('community.index') }}" class="btn btn-purple btn-lg px-4">Browse Community Discussions</a>
             </div>
         </div>
     </div>
+
 </div>
 {% endblock %}

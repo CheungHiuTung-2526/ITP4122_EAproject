@@ -1,93 +1,72 @@
 {% extends "base.html.j2" %}
 
-{% block title %}Resources - DILWL Staff Portal{% endblock %}
+{% block title %}Learning Resources - IVE LWL Academic Hub{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0">Resources</h2>
-    <div>
-        {% if current_user.is_admin %} 
-        <a href="{{ url_for('resources.list_categories') }}" class="btn btn-outline-secondary me-2">
-            <i class="fas fa-tags me-2"></i>Manage Categories
-        </a>
-        {% endif %}
+<div class="container my-5">
 
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Learning Resources</h2>
+            <p class="text-muted mb-0">Share and access study materials uploaded to Google Cloud Storage.</p>
+        </div>
         {% if current_user.is_authenticated %}
-        <a href="{{ url_for('resources.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus me-2"></i>Upload Resource
+        <a href="{{ url_for('resources.create') }}" class="btn btn-purple">
+            <i class="bi bi-upload me-2"></i> Upload Resource
         </a>
         {% endif %}
     </div>
-</div> 
 
-    <div class="row">
-        
-        <div class="col-md-3 mb-4">
-            
-            <div class="card shadow-sm border-0 rounded-4 mb-4">
-                <div class="card-header bg-white border-0 pt-3">
-                    <h5><i class="fas fa-filter me-2"></i>Filter by Type</h5>
-                </div>
-                <div class="list-group list-group-flush">
-                    <a href="{{ url_for('resources.list') }}" class="list-group-item list-group-item-action">All</a>
-                    <a href="{{ url_for('resources.list', type='ebook') }}" class="list-group-item list-group-item-action">E-books</a>
-                    <a href="{{ url_for('resources.list', type='video') }}" class="list-group-item list-group-item-action">Videos</a>
-                    <a href="{{ url_for('resources.list', type='sample') }}" class="list-group-item list-group-item-action">Sample Code</a>
-                    <a href="{{ url_for('resources.list', type='tool') }}" class="list-group-item list-group-item-action">Tools</a>
-                </div>
-            </div>
+    <!-- Category Filter -->
+    <div class="mb-4">
+        <form method="GET" class="d-flex gap-2">
+            <select name="category" class="form-select w-auto" onchange="this.form.submit()">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                <option value="{{ cat.id }}" {{ 'selected' if selected_category == cat.id else '' }}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+            {% if selected_category %}
+            <a href="{{ url_for('resources.list') }}" class="btn btn-outline-secondary">Clear</a>
+            {% endif %}
+        </form>
+    </div>
 
-            
-            <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-header bg-white border-0 pt-3">
-                    <h5><i class="fas fa-tags me-2"></i>Categories</h5>
-                </div>
-                <div class="list-group list-group-flush">
-                    {% for cat in categories %}
-                    <a href="{{ url_for('resources.list', category=cat.slug) }}" class="list-group-item list-group-item-action">{{ cat.name }}</a>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <!-- 右侧资源列表 -->
-        <div class="col-md-9">
-            {% if resources %}
-            <div class="row g-4">
-                {% for resource in resources %}
-                <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm border-0 rounded-4">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <span class="badge bg-info">{{ resource.type|capitalize }}</span>
-                                <small class="text-muted">
-                                    <i class="fas fa-download me-1"></i>{{ resource.download_count }}
-                                </small>
-                            </div>
-                            <h5 class="card-title">
-                                <a href="{{ url_for('resources.view', id=resource.id) }}" class="text-decoration-none text-dark">
-                                    {{ resource.title }}
-                                </a>
-                            </h5>
-                            <p class="card-text text-muted small">{{ resource.description|truncate(100) if resource.description else 'No description' }}</p>
-                            <div class="mt-3">
-                                <a href="{{ url_for('resources.download', id=resource.id) }}" class="btn btn-sm btn-outline-primary w-100">
-                                    <i class="fas fa-download me-2"></i>Download
-                                </a>
-                            </div>
-                        </div>
+    {% if resources %}
+    <div class="row g-4">
+        {% for resource in resources %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{{ url_for('resources.view', id=resource.id) }}" class="text-decoration-none">
+                            {{ resource.title }}
+                        </a>
+                    </h5>
+                    <p class="card-text text-muted small">{{ resource.description[:120] }}{% if resource.description|length > 120 %}...{% endif %}</p>
+                    
+                    <div class="mt-3">
+                        <span class="badge bg-secondary">{{ resource.category.name if resource.category else 'Uncategorized' }}</span>
+                        <span class="text-muted small ms-2">by {{ resource.uploader.username }}</span>
                     </div>
                 </div>
-                {% endfor %}
+                <div class="card-footer bg-white">
+                    <small class="text-muted">
+                        {{ resource.created_at.strftime('%Y-%m-%d') }}
+                        {% if resource.file_url %}
+                        • <a href="{{ resource.file_url }}" target="_blank" class="text-decoration-none">Download from Cloud Storage</a>
+                        {% endif %}
+                    </small>
+                </div>
             </div>
-            {% else %}
-            <div class="alert alert-info text-center py-5">
-                <i class="fas fa-folder-open fa-3x mb-3 d-block"></i>
-                <h5>No resources yet</h5>
-            </div>
-            {% endif %}
         </div>
+        {% endfor %}
     </div>
+    {% else %}
+    <div class="alert alert-info">
+        No resources found. Be the first to upload!
+    </div>
+    {% endif %}
+
 </div>
 {% endblock %}
