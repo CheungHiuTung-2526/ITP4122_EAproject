@@ -57,7 +57,6 @@ def create():
                     from werkzeug.utils import secure_filename
                     import os
 
-                    # 使用 /app/shared/uploads 作為上傳目錄
                     upload_folder = '/app/shared/uploads'
                     os.makedirs(upload_folder, exist_ok=True)
 
@@ -101,7 +100,6 @@ def edit(id):
                     from werkzeug.utils import secure_filename
                     import os
 
-                    # 使用 /app/shared/uploads 作為上傳目錄
                     upload_folder = '/app/shared/uploads'
                     os.makedirs(upload_folder, exist_ok=True)
 

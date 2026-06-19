@@ -22,7 +22,7 @@ spec:
 
         envFrom:
           - configMapRef:
-              name: flask-config          # ← 從 ConfigMap 讀取
+              name: flask-config          
 
         env:
           - name: DB_USER
