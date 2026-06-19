@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: flask-app
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: flask-app
@@ -19,24 +19,30 @@ spec:
         - containerPort: 8080
         command: ["gunicorn"]
         args: ["--bind", "0.0.0.0:8080", "microblog:app"]
+
+        envFrom:
+          - configMapRef:
+              name: flask-config          # ← 從 ConfigMap 讀取
+
         env:
-        - name: DB_USER
-          value: "esther"
-        - name: DB_PASS
-          valueFrom:
-            secretKeyRef:
-              name: db-secret
-              key: DB_PASS
-        - name: DB_HOST
-          value: "35.201.179.178"
-        - name: DB_NAME
-          value: "eadb"
-        - name: GCS_BUCKET_NAME
-          value: "itp4122-upload-1780634365"
-        - name: SECRET_KEY
-          valueFrom:
-            secretKeyRef:
-              name: db-secret
-              key: SECRET_KEY
-        - name: PUBLIC_BASE_URL
-          value: "http://35.234.15.92"
+          - name: DB_USER
+            value: "esther"
+          - name: DB_PASS
+            valueFrom:
+              secretKeyRef:
+                name: db-secret
+                key: DB_PASS
+          - name: SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: db-secret
+                key: SECRET_KEY
+
+        volumeMounts:
+          - name: filestore-volume
+            mountPath: /app/shared
+
+      volumes:
+        - name: filestore-volume
+          persistentVolumeClaim:
+            claimName: itp4122-filestore-pvc

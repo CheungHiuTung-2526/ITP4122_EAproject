@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: itp4122-filestore-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: filestore-sc
+  resources:
+    requests:
+      storage: 50Gi

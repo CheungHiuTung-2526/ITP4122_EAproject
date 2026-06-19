@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flask-config
+data:
+  DB_HOST: "35.201.179.178"                    
+  DB_NAME: "eadb"
+  GCS_BUCKET_NAME: "itp4122-upload-1780634365"
+  PUBLIC_BASE_URL: "http://35.234.15.92"      

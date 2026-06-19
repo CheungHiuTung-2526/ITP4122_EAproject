@@ -49,29 +49,28 @@ def create():
             is_featured=form.is_featured.data
         )
         
-        # === GCS Upload ===
+        # === Filestore Upload ===
         if 'file' in request.files:
             file = request.files['file']
             if file.filename != '':
                 try:
-                    bucket_name = os.environ.get('GCS_BUCKET_NAME')
-                    if not bucket_name:
-                        flash('GCS Bucket not configured', 'danger')
-                    else:
-                        storage_client = storage.Client()
-                        bucket = storage_client.bucket(bucket_name)
-                        blob = bucket.blob(file.filename)
-                        
-                        blob.upload_from_string(
-                            file.read(), 
-                            content_type=file.content_type or 'application/octet-stream'
-                        )
-                        
-                        # Save public GCS URL
-                        resource.file_path = f"https://storage.googleapis.com/{bucket_name}/{file.filename}"
-                        flash('File uploaded to Google Cloud Storage successfully!', 'success')
+                    from werkzeug.utils import secure_filename
+                    import os
+
+                    # 使用 /app/shared/uploads 作為上傳目錄
+                    upload_folder = '/app/shared/uploads'
+                    os.makedirs(upload_folder, exist_ok=True)
+
+                    filename = secure_filename(file.filename)
+                    filepath = os.path.join(upload_folder, filename)
+                    
+                    file.save(filepath)
+
+                    resource.file_path = filepath
+                    flash('File uploaded to Filestore successfully!', 'success')
+
                 except Exception as e:
-                    flash(f'GCS Upload failed: {str(e)}', 'danger')
+                    flash(f'File upload failed: {str(e)}', 'danger')
         
         db.session.add(resource)
         db.session.commit()
@@ -99,14 +98,23 @@ def edit(id):
             file = request.files['file']
             if file.filename != '':
                 try:
-                    bucket_name = os.environ.get('GCS_BUCKET_NAME')
-                    storage_client = storage.Client()
-                    bucket = storage_client.bucket(bucket_name)
-                    blob = bucket.blob(file.filename)
-                    blob.upload_from_string(file.read(), content_type=file.content_type)
-                    resource.file_path = f"https://storage.googleapis.com/{bucket_name}/{file.filename}"
+                    from werkzeug.utils import secure_filename
+                    import os
+
+                    # 使用 /app/shared/uploads 作為上傳目錄
+                    upload_folder = '/app/shared/uploads'
+                    os.makedirs(upload_folder, exist_ok=True)
+
+                    filename = secure_filename(file.filename)
+                    filepath = os.path.join(upload_folder, filename)
+                    
+                    file.save(filepath)
+
+                    resource.file_path = filepath
+                    flash('File uploaded to Filestore successfully!', 'success')
+
                 except Exception as e:
-                    flash(f'GCS Upload failed: {str(e)}', 'danger')
+                    flash(f'File upload failed: {str(e)}', 'danger')
         
         db.session.commit()
         flash('Resource updated.', 'success')
@@ -189,6 +197,7 @@ def download(id):
     resource = Resource.query.get_or_404(id)
 
     # Record download
+    from app.models.resource import Download
     download = Download(
         user_id=current_user.id,
         resource_id=resource.id,
@@ -198,13 +207,20 @@ def download(id):
     db.session.add(download)
     db.session.commit()
 
-    if resource.file_path and resource.file_path.startswith('https://storage.googleapis.com'):
-        return redirect(resource.file_path)
-    elif resource.external_link:
+    if resource.file_path:
+        if os.path.exists(resource.file_path):
+            # 從 Filestore 下載
+            from flask import send_file
+            return send_file(resource.file_path, as_attachment=True)
+        elif resource.file_path.startswith('https://storage.googleapis.com'):
+            # 兼容舊 GCS 檔案
+            return redirect(resource.file_path)
+    
+    if resource.external_link:
         return redirect(resource.external_link)
-    else:
-        flash('No download link available.', 'warning')
-        return redirect(url_for('resources.view', id=resource.id))
+    
+    flash('No download link available.', 'warning')
+    return redirect(url_for('resources.view', id=resource.id))
 
 
 @bp.route('/my-downloads')
