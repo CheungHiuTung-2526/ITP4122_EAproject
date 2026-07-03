@@ -1,15 +1,15 @@
 {% extends "base.html.j2" %}
 
-{% block title %}Admin Dashboard - DILWL Staff Portal{% endblock %}
+{% block title %}Teacher Dashboard - DILWL Staff Portal{% endblock %}
 
 {% block content %}
 <div class="container my-4">
-    <h2 class="mb-4">Admin Dashboard</h2>
+    <h2 class="mb-4">Teacher Dashboard</h2>
     <div class="row g-4">
-        <div class="col-md-6 col-lg-3"><div class="card text-center shadow-sm border-0 rounded-4"><div class="card-body"><i class="fas fa-book fa-3x text-purple mb-3"></i><h5>Tutorials</h5><p class="small">Manage tutorials, categories, tags</p><a href="{{ url_for('tutorials.list_categories') }}" class="btn btn-sm btn-outline-purple">Manage</a></div></div></div>
-        <div class="col-md-6 col-lg-3"><div class="card text-center shadow-sm border-0 rounded-4"><div class="card-body"><i class="fas fa-download fa-3x text-purple mb-3"></i><h5>Resources</h5><p class="small">Manage resources, categories</p><a href="{{ url_for('resources.list_categories') }}" class="btn btn-sm btn-outline-purple">Manage</a></div></div></div>
-        <div class="col-md-6 col-lg-3"><div class="card text-center shadow-sm border-0 rounded-4"><div class="card-body"><i class="fas fa-users fa-3x text-purple mb-3"></i><h5>Users</h5><p class="small">Manage user accounts and roles</p><a href="{{ url_for('admin.list_users') }}" class="btn btn-sm btn-outline-purple">Manage</a></div></div></div>
-        <div class="col-md-6 col-lg-3"><div class="card text-center shadow-sm border-0 rounded-4"><div class="card-body"><i class="fas fa-cog fa-3x text-purple mb-3"></i><h5>Roles</h5><p class="small">Manage roles</p><a href="{{ url_for('admin.list_roles') }}" class="btn btn-sm btn-outline-purple">Manage</a></div></div></div>
+        <div class="col-md-6 col-lg-3"><div class="card text-center shadow-sm border-0 rounded-4"><div class="card-body"><i class="fas fa-book fa-3x text-orange mb-3"></i><h5>Tutorials</h5><p class="small">Manage tutorials, categories, tags</p><a href="{{ url_for('tutorials.list_categories') }}" class="btn btn-sm btn-outline-orange">Manage</a></div></div></div>
+        <div class="col-md-6 col-lg-3"><div class="card text-center shadow-sm border-0 rounded-4"><div class="card-body"><i class="fas fa-download fa-3x text-orange mb-3"></i><h5>Resources</h5><p class="small">Manage resources, categories</p><a href="{{ url_for('resources.list_categories') }}" class="btn btn-sm btn-outline-orange">Manage</a></div></div></div>
+        <div class="col-md-6 col-lg-3"><div class="card text-center shadow-sm border-0 rounded-4"><div class="card-body"><i class="fas fa-users fa-3x text-orange mb-3"></i><h5>Users</h5><p class="small">Manage user accounts and roles</p><a href="{{ url_for('admin.list_users') }}" class="btn btn-sm btn-outline-orange">Manage</a></div></div></div>
+        <div class="col-md-6 col-lg-3"><div class="card text-center shadow-sm border-0 rounded-4"><div class="card-body"><i class="fas fa-cog fa-3x text-orange mb-3"></i><h5>Roles</h5><p class="small">Manage roles</p><a href="{{ url_for('admin.list_roles') }}" class="btn btn-sm btn-outline-orange">Manage</a></div></div></div>
     </div>
 </div>
 {% endblock %}

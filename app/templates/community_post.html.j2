@@ -1,3 +1,4 @@
+community_post.html.j2
 {% extends "base.html.j2" %}
 
 {% block title %}{{ post.title }} - DILWL Staff Internal System{% endblock %}
@@ -26,7 +27,7 @@
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <h1 class="display-6 fw-bold mb-0">{{ post.title }}</h1>
                         
-                        <!-- Admin Only: Edit & Delete Post -->
+                        <!-- Teacher Only: Edit & Delete Post -->
                         {% if current_user.is_authenticated and current_user.is_admin() %}
                         <div class="btn-group">
                             <a href="{{ url_for('community.edit_post', id=post.id) }}" 
@@ -112,7 +113,7 @@
                                     <div class="d-flex align-items-center gap-2">
                                         <small class="text-muted">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
                                         
-                                        <!-- Admin Delete Button -->
+                                        <!-- Teacher Delete Button -->
                                         {% if current_user.is_authenticated and current_user.is_admin() %}
                                         <button onclick="confirmDeleteComment({{ comment.id }})" 
                                                 class="btn btn-sm btn-outline-danger py-0 px-2" 
@@ -163,7 +164,7 @@
                                                 <div class="d-flex align-items-center gap-2">
                                                     <small class="text-muted">{{ reply.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
                                                     
-                                                    <!-- Admin Delete Button for Reply -->
+                                                    <!-- Teacher Delete Button for Reply -->
                                                     {% if current_user.is_authenticated and current_user.is_admin() %}
                                                         <button onclick="confirmDeleteReply({{ reply.id }})" 
                                                             class="btn btn-sm btn-outline-danger py-0 px-2" 
@@ -197,7 +198,7 @@
                                         {{ form.hidden_tag() }}
                                         <textarea name="content" class="form-control" rows="3" placeholder="Write your reply..."></textarea>
                                         <div class="mt-2">
-                                            <button type="submit" class="btn btn-purple btn-sm">Post Reply</button>
+                                            <button type="submit" class="btn btn-orange btn-sm">Post Reply</button>
                                             <button type="button" class="btn btn-outline-secondary btn-sm ms-2" 
                                                     onclick="hideReplyForm({{ comment.id }})">Cancel</button>
                                         </div>
@@ -222,7 +223,7 @@
                         {% for error in form.content.errors %}
                             <div class="text-danger small mt-1">{{ error }}</div>
                         {% endfor %}
-                        <button type="submit" class="btn btn-purple mt-3">
+                        <button type="submit" class="btn btn-orange mt-3">
                             <i class="fas fa-paper-plane me-2"></i>Post Comment
                         </button>
                     </form>

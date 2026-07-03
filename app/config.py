@@ -11,7 +11,6 @@ class Config:
     DB_HOST = os.environ.get('DB_HOST')
     DB_NAME = os.environ.get('DB_NAME', 'eadb')
 
-    # 強制使用 MySQL（Public IP）
     SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:3306/{DB_NAME}?charset=utf8mb4"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # Google Cloud Storage (Serverless Feature)

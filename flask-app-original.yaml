@@ -1,0 +1,124 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    autopilot.gke.io/resource-adjustment: '{"input":{"containers":[{"name":"flask"}]},"output":{"containers":[{"limits":{"ephemeral-storage":"1Gi"},"requests":{"cpu":"500m","ephemeral-storage":"1Gi","memory":"2Gi"},"name":"flask"}]},"computeClassAtAdmission":"Default","modified":true}'
+    autopilot.gke.io/warden-version: 35.26.4-gke.2
+    deployment.kubernetes.io/revision: "48"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"flask-app","namespace":"default"},"spec":{"replicas":3,"selector":{"matchLabels":{"app":"flask-app"}},"template":{"metadata":{"labels":{"app":"flask-app"}},"spec":{"containers":[{"args":["--bind","0.0.0.0:8080","microblog:app"],"command":["gunicorn"],"env":[{"name":"DB_USER","value":"esther"},{"name":"DB_PASS","valueFrom":{"secretKeyRef":{"key":"DB_PASS","name":"db-secret"}}},{"name":"SECRET_KEY","valueFrom":{"secretKeyRef":{"key":"SECRET_KEY","name":"db-secret"}}}],"envFrom":[{"configMapRef":{"name":"flask-config"}}],"image":"asia-east1-docker.pkg.dev/itp4122project/itp4122-repo/flask-app:latest","name":"flask","ports":[{"containerPort":8080}],"volumeMounts":[{"mountPath":"/app/shared","name":"filestore-volume"}]}],"volumes":[{"name":"filestore-volume","persistentVolumeClaim":{"claimName":"itp4122-filestore-pvc"}}]}}}}
+  creationTimestamp: "2026-06-04T15:38:44Z"
+  generation: 48
+  name: flask-app
+  namespace: default
+  resourceVersion: "1782028587754175020"
+  uid: cb9d597f-b901-43ec-89ce-b63c4971e04c
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: flask-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/restartedAt: "2026-06-21T07:56:27Z"
+      labels:
+        app: flask-app
+    spec:
+      containers:
+      - args:
+        - --bind
+        - 0.0.0.0:8080
+        - microblog:app
+        command:
+        - gunicorn
+        env:
+        - name: DB_USER
+          value: esther
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              key: DB_PASS
+              name: db-secret
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key: SECRET_KEY
+              name: db-secret
+        envFrom:
+        - configMapRef:
+            name: flask-config
+        image: asia-east1-docker.pkg.dev/itp4122project/itp4122-repo/flask-app:latest
+        imagePullPolicy: Always
+        name: flask
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          limits:
+            ephemeral-storage: 1Gi
+          requests:
+            cpu: 500m
+            ephemeral-storage: 1Gi
+            memory: 2Gi
+        securityContext:
+          capabilities:
+            drop:
+            - NET_RAW
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /app/shared
+          name: filestore-volume
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - effect: NoSchedule
+        key: kubernetes.io/arch
+        operator: Equal
+        value: amd64
+      volumes:
+      - name: filestore-volume
+        persistentVolumeClaim:
+          claimName: itp4122-filestore-pvc
+status:
+  availableReplicas: 3
+  conditions:
+  - lastTransitionTime: "2026-06-21T06:32:17Z"
+    lastUpdateTime: "2026-06-21T06:32:17Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2026-06-04T15:38:45Z"
+    lastUpdateTime: "2026-06-21T07:56:27Z"
+    message: Created new replica set "flask-app-5dbf57968c"
+    reason: NewReplicaSetCreated
+    status: "True"
+    type: Progressing
+  - lastTransitionTime: "2026-06-21T07:56:27Z"
+    lastUpdateTime: "2026-06-21T07:56:27Z"
+    message: |-
+      admission webhook "warden-validating.common-webhooks.networking.gke.io" denied the request: GKE Warden rejected the request because it violates one or more constraints.
+      Violations details: {"[denied by autogke-default-linux-capabilities]":["linux capability 'NET_ADMIN' on container 'istio-init' not allowed; Autopilot only allows the capabilities: 'AUDIT_WRITE,CHOWN,DAC_OVERRIDE,FOWNER,FSETID,KILL,MKNOD,NET_BIND_SERVICE,NET_RAW,SETFCAP,SETGID,SETPCAP,SETUID,SYS_CHROOT,SYS_PTRACE'."]}
+      Requested by user: 'system:serviceaccount:kube-system:replicaset-controller', groups: 'system:serviceaccounts,system:serviceaccounts:kube-system,system:authenticated'.
+    reason: FailedCreate
+    status: "True"
+    type: ReplicaFailure
+  observedGeneration: 48
+  readyReplicas: 3
+  replicas: 3
+  terminatingReplicas: 0
+  unavailableReplicas: 1
