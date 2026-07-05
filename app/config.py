@@ -5,14 +5,17 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
     
-    # ==================== Force MySQL (Cloud SQL) ====================
-    DB_USER = os.environ.get('DB_USER', 'esther')
-    DB_PASS = os.environ.get('DB_PASS')
-    DB_HOST = os.environ.get('DB_HOST')
-    DB_NAME = os.environ.get('DB_NAME', 'eadb')
 
-    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:3306/{DB_NAME}?charset=utf8mb4"
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+        'sqlite:///' + os.path.join(basedir, 'app.db')
+    # ==================== Force MySQL (Cloud SQL) ====================
+    #DB_USER = os.environ.get('DB_USER', 'esther')
+    #DB_PASS = os.environ.get('DB_PASS')
+    #DB_HOST = os.environ.get('DB_HOST')
+    #DB_NAME = os.environ.get('DB_NAME', 'eadb')
+
+    #SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:3306/{DB_NAME}?charset=utf8mb4"
+    #SQLALCHEMY_TRACK_MODIFICATIONS = False
     # Google Cloud Storage (Serverless Feature)
     GCS_BUCKET_NAME = "itp4122-upload-1780634365"
 
